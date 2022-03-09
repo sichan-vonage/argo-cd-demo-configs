@@ -1,0 +1,3 @@
+argocd-image-updater:
+  config:
+    logLevel: trace

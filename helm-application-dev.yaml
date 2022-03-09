@@ -4,10 +4,9 @@ metadata:
   name: helm-application-dev
   namespace: argocd
   annotations:
-    argocd-image-updater.argoproj.io/image-list: app-dev=docker.io/kinluek/app-dev
+    argocd-image-updater.argoproj.io/image-list: app-dev=docker.io/kinluek/app-dev:~1
     argocd-image-updater.argoproj.io/app-dev.helm.image-name: deployment.image.name
     argocd-image-updater.argoproj.io/app-dev.helm.image-tag: deployment.image.tag
-    argocd-image-updater.argoproj.io/app-dev.helm.update-strategy: semver:1.x.x
     argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/git-creds
     argocd-image-updater.argoproj.io/git-branch: main
 spec:
