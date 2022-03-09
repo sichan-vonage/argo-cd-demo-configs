@@ -3,13 +3,19 @@ kind: Application
 metadata:
   name: helm-application-dev
   namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: docker.io/kinluek/app-dev:1.x
+    argocd-image-updater.argoproj.io/write-back-method: git
 spec:
   project: default
 
   source:
-    repoURL: https://github.com/sichan-vonage/argo-cd-demo-configs.git
+    repoURL: 'git@github.com:sichan-vonage/argo-cd-demo-configs.git'
     targetRevision: HEAD
     path: helm/temp/example-app
+    helm:
+      valueFiles:
+        - values.dev.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: helmapp-dev
