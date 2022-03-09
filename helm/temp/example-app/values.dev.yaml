@@ -4,4 +4,4 @@ deployment:
   image:
     name: kinluek/app-dev
     tag: 1.0.0
-  replicas: 2
+  replicas: 1
