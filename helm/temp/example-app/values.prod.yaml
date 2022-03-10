@@ -2,6 +2,6 @@ name: helm-app-prod
 
 deployment:
   image:
-    name: kinluek/app-dev
-    tag: 1.0.0
+    name: kinluek/app-prod
+    tag: 1.0.3
   replicas: 2
