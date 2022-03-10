@@ -2,6 +2,6 @@ name: helm-app-dev
 
 deployment:
   image:
-    name: docker.io/kinluek/app-dev
-    tag: 1.0.0
+    name: docker.io/nginxdemos/hello
+    tag: 0.2
   replicas: 1
