@@ -16,9 +16,9 @@ spec:
     repoURL: 'git@github.com:sichan-vonage/argo-cd-demo-configs.git'
     targetRevision: HEAD
     path: helm/temp/example-app
-#    helm:
-#      valueFiles:
-#        - values.dev.yaml
+    helm:
+      valueFiles:
+        - values.dev.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: helmapp-dev
