@@ -4,5 +4,5 @@ helm:
     value: docker.io/kinluek/app-dev
     forcestring: true
   - name: deployment.image.tag
-    value: 1.0.3
+    value: 1.0.4
     forcestring: true
