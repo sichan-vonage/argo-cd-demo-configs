@@ -1,10 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: helm-application-dev
+  name: helm-application-prod
   namespace: argocd
   annotations:
-    argocd-image-updater.argoproj.io/image-list: app-dev=docker.io/kinluek/app-dev:~1
+    argocd-image-updater.argoproj.io/image-list: app-prod=docker.io/kinluek/app-prod:~1
     argocd-image-updater.argoproj.io/app-dev.helm.image-name: deployment.image.name
     argocd-image-updater.argoproj.io/app-dev.helm.image-tag: deployment.image.tag
     argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/git-creds
@@ -18,10 +18,10 @@ spec:
     path: helm/temp/example-app
     helm:
       valueFiles:
-        - values.dev.yaml
+        - values.prod.yaml
   destination:
     server: https://kubernetes.default.svc
-    namespace: helmapp-dev
+    namespace: helmapp-prod
 
   syncPolicy:
     syncOptions:

@@ -4,4 +4,4 @@ deployment:
   image:
     name: docker.io/kinluek/app-prod
     tag: 1.0.3
-  replicas: 2
+  replicas: 1
