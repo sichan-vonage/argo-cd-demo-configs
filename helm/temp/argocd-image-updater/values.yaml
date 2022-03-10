@@ -3,6 +3,6 @@ argocd-image-updater:
     logLevel: trace
     registries:
     - name: Docker Hub
-      api_url: https://docker.io
+      api_url: https://registry.hub.docker.com
       prefix: docker.io
       ping: no
