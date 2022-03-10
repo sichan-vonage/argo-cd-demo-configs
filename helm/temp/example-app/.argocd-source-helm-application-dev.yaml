@@ -1,0 +1,8 @@
+helm:
+  parameters:
+  - name: deployment.image.name
+    value: docker.io/kinluek/app-dev
+    forcestring: true
+  - name: deployment.image.tag
+    value: 1.0.4
+    forcestring: true
