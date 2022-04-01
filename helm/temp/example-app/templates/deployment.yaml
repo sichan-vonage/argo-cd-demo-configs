@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: {{ .Values.name }}
-        image: {{ .Values.deployment.image.name }}:{{ .Values.deployment.image.tag }}
+        image: {{ .Values.deployment.image.name }}:{{ .Values.image_tag }}
         ports:
         - containerPort: 8080
 
