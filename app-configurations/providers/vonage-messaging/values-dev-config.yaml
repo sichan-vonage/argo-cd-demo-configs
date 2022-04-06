@@ -1,0 +1,8 @@
+name: helm-app-dev
+
+environment: dev
+
+deployment:
+  image:
+    name: docker.io/kinluek/vonage-messaging
+  replicas: 1

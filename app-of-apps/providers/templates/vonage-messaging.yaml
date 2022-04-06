@@ -1,22 +1,24 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: helm-application-prod
+  name: vonage-messaging
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
+
+  destination:
+    namespace: {{.Values.namespace}}
+    server: https://kubernetes.default.svc
 
   source:
     repoURL: "https://github.com/sichan-vonage/argo-cd-demo-configs.git"
     targetRevision: HEAD
-    path: helm/temp/example-app
+    path: app-configurations/providers/vonage-messaging
     helm:
       valueFiles:
-        - values-prod-image.yaml
-        - values-prod-config.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: helmapp-prod
+        - {{.Values.helm_values_file}}
 
   syncPolicy:
     syncOptions:

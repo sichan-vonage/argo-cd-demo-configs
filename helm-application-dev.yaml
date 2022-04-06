@@ -7,7 +7,7 @@ spec:
   project: default
 
   source:
-    repoURL: "git@github.com:sichan-vonage/argo-cd-demo-configs.git"
+    repoURL: "https://github.com/sichan-vonage/argo-cd-demo-configs.git"
     targetRevision: HEAD
     path: helm/temp/example-app
     helm:

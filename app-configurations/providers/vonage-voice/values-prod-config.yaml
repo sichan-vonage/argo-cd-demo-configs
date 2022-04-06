@@ -1,0 +1,8 @@
+name: helm-app-prod
+
+environment: prod
+
+deployment:
+  image:
+    name: docker.io/kinluek/vonage-voice
+  replicas: 1
