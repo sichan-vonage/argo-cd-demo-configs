@@ -17,8 +17,7 @@ spec:
     targetRevision: HEAD
     path: app-configurations/providers/vonage-voice
     helm:
-      valueFiles:
-        - {{.Values.helm_values_file}}
+      valueFiles: {{toYaml .Values.helm_values_files | nindent 8}}
 
   syncPolicy:
     syncOptions:

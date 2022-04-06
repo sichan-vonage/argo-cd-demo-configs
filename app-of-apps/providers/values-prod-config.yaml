@@ -1,3 +1,5 @@
-helm_values_file: values-prod-config.yaml
+helm_values_files:
+  - values-prod-config.yaml
+  - values-prod-image.yaml
 
 namespace: prod

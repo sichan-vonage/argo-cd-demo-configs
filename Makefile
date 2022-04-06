@@ -1,5 +1,5 @@
 app-of-apps-providers-prod:
-	argocd app create apps \
+	argocd app create providers \
     --dest-namespace argocd \
     --dest-server https://kubernetes.default.svc \
     --repo https://github.com/sichan-vonage/argo-cd-demo-configs.git \
@@ -7,7 +7,7 @@ app-of-apps-providers-prod:
 	--values values-prod-config.yaml
 
 app-of-apps-providers-dev:
-	argocd app create apps \
+	argocd app create providers \
     --dest-namespace argocd \
     --dest-server https://kubernetes.default.svc \
     --repo https://github.com/sichan-vonage/argo-cd-demo-configs.git \
