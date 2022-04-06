@@ -1,4 +1,4 @@
-name: helm-app-prod
+name: vonage-messaging
 
 environment: prod
 

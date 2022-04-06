@@ -1,0 +1,8 @@
+name: vonage-scheduler
+
+environment: prod
+
+deployment:
+  image:
+    name: docker.io/kinluek/vonage-scheduler
+  replicas: 1
