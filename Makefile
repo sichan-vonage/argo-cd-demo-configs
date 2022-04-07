@@ -13,3 +13,8 @@ app-of-apps-providers-dev:
     --repo https://github.com/sichan-vonage/argo-cd-demo-configs.git \
     --path app-of-apps/providers \
 	--values values-dev-config.yaml
+
+
+docker-build-envpromoter:
+    cd cmd/envpromoter && docker build -t kinluek/envpromoter:latest . -f Dockerfile.envpromoter
+    docker push kinluek/envpromoter:latest

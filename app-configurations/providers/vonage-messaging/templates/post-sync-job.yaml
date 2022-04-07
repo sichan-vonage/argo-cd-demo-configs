@@ -1,0 +1,33 @@
+# {{ if eq .Values.environment "dev" }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: after
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      containers:
+        - name: promote-vonage-messaging
+          image: kinluek/envpromoter:latest
+          args:
+            - "-github-user=$(GITHUB_USERNAME)"
+            - "-github-token=$(GITHUB_token)"
+            - "-from-url=https://api.github.com/repos/sichan-vonage/argo-cd-demo-configs/contents/app-configurations/providers/vonage-messaging/values-dev-image.yaml"
+            - "-to-url=https://api.github.com/repos/sichan-vonage/argo-cd-demo-configs/contents/app-configurations/providers/vonage-messaging/values-prod-image.yaml"
+          env:
+            - name: GITHUB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: github-ci-credential
+                  key: username
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: github-ci-credential
+                  key: token
+      restartPolicy: Never
+  backoffLimit: 0
+# {{ end }}
