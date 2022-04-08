@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"flag"
 	"log"
-	"strings"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -86,7 +85,7 @@ func main() {
 
 	req := commitRequest{
 		Sha:     toFileResp.Sha,
-		Content: strings.Replace(fromFileResp.Content, "\n", "", 1),
+		Content: fromFileResp.Content,
 		Message: commitMessage,
 	}
 	resp, err = client.R().SetBody(req).Put(promoteToURL)
