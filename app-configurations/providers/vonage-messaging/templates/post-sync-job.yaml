@@ -1,4 +1,4 @@
-# {{ if eq .Values.environment "dev" }}
+{{ if eq .Values.environment "dev" }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: promote-vonage-messaging
-          image: kinluek/envpromoter:1.0.1
+          image: kinluek/envpromoter:1.0.2
           args:
             - "-github-user=$(GITHUB_USERNAME)"
             - "-github-token=$(GITHUB_token)"
@@ -30,4 +30,4 @@ spec:
                   key: token
       restartPolicy: Never
   backoffLimit: 0
-# {{ end }}
+{{ end }}
