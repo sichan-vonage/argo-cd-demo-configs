@@ -18,10 +18,10 @@ FROM alpine:3.12
 
 ARG DIR
 
-WORKDIR /
+WORKDIR /usr/local/bin/
 
 # Add executable into image
-COPY --from=builder  /app  /
+COPY --from=builder  /app  /usr/local/bin/
 
-# execute command when docker launches / run
+
 ENTRYPOINT [ "./app" ]

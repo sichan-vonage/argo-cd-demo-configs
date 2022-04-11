@@ -11,12 +11,13 @@ spec:
     spec:
       containers:
         - name: promote-vonage-messaging
-          image: kinluek/envpromoter:1.0.2
+          image: kinluek/envpromoter:1.0.4
           args:
             - "-github-user=$(GITHUB_USERNAME)"
             - "-github-token=$(GITHUB_token)"
             - "-from-url=https://api.github.com/repos/sichan-vonage/argo-cd-demo-configs/contents/app-configurations/providers/vonage-messaging/values-dev-image.yaml"
             - "-to-url=https://api.github.com/repos/sichan-vonage/argo-cd-demo-configs/contents/app-configurations/providers/vonage-messaging/values-prod-image.yaml"
+            - "-repo-url=https://api.github.com/repos/sichan-vonage/argo-cd-demo-configs"
           env:
             - name: GITHUB_USERNAME
               valueFrom:

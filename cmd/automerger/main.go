@@ -13,10 +13,10 @@ import (
 var (
 	githubUsername string
 	githubToken    string
-	promoteFromURL string
-	promoteToURL   string
-	commitMessage  string
 	repoURL        string
+	pathToFile     string
+	content        string
+	commitMessage  string
 )
 
 type getFileResponse struct {
@@ -53,15 +53,23 @@ type createPrRequest struct {
 	Base  string `json:"base"`
 }
 
+type createPrResponse struct {
+	Number int `json:"number"`
+}
+
+type mergeRequest struct {
+	CommitMessage string `json:""`
+}
+
 // get sha of main branch https://api.github.com/repos/sichan-vonage/argo-cd-demo-configs/branches/main
 
 func main() {
 	flag.StringVar(&githubUsername, "github-user", "", "provide the github username")
 	flag.StringVar(&githubToken, "github-token", "", "provide the github token")
 	flag.StringVar(&repoURL, "repo-url", "", "provide the github repo api url")
-	flag.StringVar(&promoteFromURL, "from-url", "", "the url of the file we want to promote from")
-	flag.StringVar(&promoteToURL, "to-url", "", "the url of the file we want to promote to")
-	flag.StringVar(&commitMessage, "message", "promote image", "the commit message that will be used")
+	flag.StringVar(&pathToFile, "file-path", "", "provide the the path to the file that needs updating")
+	flag.StringVar(&content, "content", "", "content of the file")
+	flag.StringVar(&commitMessage, "message", "ci commit", "commit message")
 	flag.Parse()
 
 	if githubUsername == "" {
@@ -73,64 +81,23 @@ func main() {
 	if repoURL == "" {
 		log.Fatal("missing repo-url flag")
 	}
-	if promoteFromURL == "" {
+	if pathToFile == "" {
 		log.Fatal("missing from-url flag")
 	}
-	if promoteToURL == "" {
-		log.Fatal("missing to-url flag")
+	if content == "" {
+		log.Fatal("missing content flag")
 	}
 
 	client := resty.New()
 	client = client.SetBasicAuth(githubUsername, githubToken)
 
-	// 1. check whether there has been a change from dev to prod
-	//    * get dev file
-	//    * get prod file
-	//    * compare
-
-	var devFileResp getFileResponse
-	resp, err := client.R().SetResult(&devFileResp).Get(promoteFromURL)
-	if err != nil {
-		log.Fatalf("failed to make api call to %q: %s", promoteFromURL, err)
-	}
-	if resp.IsError() {
-		log.Fatalf("bad response returned from api call to %q: status=%v body=%s", promoteFromURL, resp.StatusCode(), resp.Body())
-	}
-
-	var prodFileResp getFileResponse
-	resp, err = client.R().SetResult(&prodFileResp).Get(promoteToURL)
-	if err != nil {
-		log.Fatalf("failed to make api call to %q: %s", promoteToURL, err)
-	}
-	if resp.IsError() {
-		log.Fatalf("bad response returned from api call to %q: status=%v body=%s", promoteToURL, resp.StatusCode(), resp.Body())
-	}
-
-	if devFileResp.Content == prodFileResp.Content {
-		log.Print("no changes made to image")
-		return
-	}
-
-	buf1, err := base64.StdEncoding.DecodeString(devFileResp.Content)
-	if err != nil {
-		log.Fatalf("failed to decode file content: %s", err)
-	}
-	buf2, err := base64.StdEncoding.DecodeString(prodFileResp.Content)
-	if err != nil {
-		log.Fatalf("failed to decode file content: %s", err)
-	}
-	log.Print("changes to images have been detected")
-	log.Printf("dev file contents: '%s'", buf1)
-	log.Printf("prod file contents: '%s'", buf2)
-	log.Print("creating PR to promote image...")
-
-	// 2. create new branch from main
+	// 1. create new branch from main
 	//    * get main branch sha
 	//    * create new ref from main
 
 	mainBranchURL := repoURL + "/git/refs/heads/main"
 	var getBranchResp getBranchResponse
-	resp, err = client.R().SetResult(&getBranchResp).Get(mainBranchURL)
+	resp, err := client.R().SetResult(&getBranchResp).Get(mainBranchURL)
 	if err != nil {
 		log.Fatalf("failed to make api call to %q: %s", mainBranchURL, err)
 	}
@@ -138,7 +105,7 @@ func main() {
 		log.Fatalf("bad response returned from api call to %q: status=%v body=%s", mainBranchURL, resp.StatusCode(), resp.Body())
 	}
 
-	newBranchName := fmt.Sprintf("ci-promotion-%v", time.Now().Unix())
+	newBranchName := fmt.Sprintf("ci-upgrade-dev-image-%v", time.Now().Unix())
 	refsURL := repoURL + "/git/refs"
 	resp, err = client.R().SetBody(createRefRequest{Sha: getBranchResp.Object.Sha, Ref: "refs/heads/" + newBranchName}).Post(refsURL)
 	if err != nil {
@@ -148,27 +115,40 @@ func main() {
 		log.Fatalf("bad response returned from api call to %q: status=%v body=%s", refsURL, resp.StatusCode(), resp.Body())
 	}
 
+	// 2. get sha of oriignal file
+
+	fileURL := repoURL + "/contents/" + pathToFile
+	var devFileResp getFileResponse
+	resp, err = client.R().SetResult(&devFileResp).Get(fileURL)
+	if err != nil {
+		log.Fatalf("failed to make api call to %q: %s", fileURL, err)
+	}
+	if resp.IsError() {
+		log.Fatalf("bad response returned from api call to %q: status=%v body=%s", fileURL, resp.StatusCode(), resp.Body())
+	}
+
 	req := commitRequest{
-		Sha:     prodFileResp.Sha,
-		Content: devFileResp.Content,
+		Sha:     devFileResp.Sha,
+		Content: base64.StdEncoding.EncodeToString([]byte(content)),
 		Message: commitMessage,
 		Branch:  newBranchName,
 	}
-	resp, err = client.R().SetBody(req).Put(promoteToURL)
+	resp, err = client.R().SetBody(req).Put(fileURL)
 	if err != nil {
-		log.Fatalf("failed to make api call to %q: %s", promoteToURL, err)
+		log.Fatalf("failed to make api call to %q: %s", fileURL, err)
 	}
 	if resp.IsError() {
-		log.Fatalf("bad response returned from api call to %q: status=%v body=%s", promoteToURL, resp.StatusCode(), resp.Body())
+		log.Fatalf("bad response returned from api call to %q: status=%v body=%s", fileURL, resp.StatusCode(), resp.Body())
 	}
 
 	reqPR := createPrRequest{
-		Title: "promote to prod",
+		Title: fmt.Sprintf("update dev file with '%s'", content),
 		Head:  newBranchName,
 		Base:  "main",
 	}
 	prURL := repoURL + "/pulls"
-	resp, err = client.R().SetBody(reqPR).Post(prURL)
+	var prResp createPrResponse
+	resp, err = client.R().SetBody(reqPR).SetResult(&prResp).Post(prURL)
 	if err != nil {
 		log.Fatalf("failed to make api call to %q: %s", prURL, err)
 	}
@@ -176,6 +156,15 @@ func main() {
 		log.Fatalf("bad response returned from api call to %q: status=%v body=%s", prURL, resp.StatusCode(), resp.Body())
 	}
 
+	mergeURL := fmt.Sprintf("%s/pulls/%v/merge", repoURL, prResp.Number)
+	resp, err = client.R().SetBody(reqPR).Put(mergeURL)
+	if err != nil {
+		log.Fatalf("failed to make api call to %q: %s", mergeURL, err)
+	}
+	if resp.IsError() {
+		log.Fatalf("bad response returned from api call to %q: status=%v body=%s", mergeURL, resp.StatusCode(), resp.Body())
+	}
+
 	log.Printf("response: %s\n", resp.Body())
-	log.Print("PR created to promote image")
+	log.Print("updated dev image")
 }
