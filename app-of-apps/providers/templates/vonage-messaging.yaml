@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: vonage-messaging
+  name: vonage-messaging-{{.Values.namespace}}
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
