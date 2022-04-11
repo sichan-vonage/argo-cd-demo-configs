@@ -15,7 +15,6 @@ var (
 	githubToken    string
 	promoteFromURL string
 	promoteToURL   string
-	commitMessage  string
 	repoURL        string
 )
 
@@ -61,7 +60,6 @@ func main() {
 	flag.StringVar(&repoURL, "repo-url", "", "provide the github repo api url")
 	flag.StringVar(&promoteFromURL, "from-url", "", "the url of the file we want to promote from")
 	flag.StringVar(&promoteToURL, "to-url", "", "the url of the file we want to promote to")
-	flag.StringVar(&commitMessage, "message", "promote image", "the commit message that will be used")
 	flag.Parse()
 
 	if githubUsername == "" {
@@ -148,10 +146,12 @@ func main() {
 		log.Fatalf("bad response returned from api call to %q: status=%v body=%s", refsURL, resp.StatusCode(), resp.Body())
 	}
 
+	message := fmt.Sprintf("promiting prod file with: '%s'", buf1)
+
 	req := commitRequest{
 		Sha:     prodFileResp.Sha,
 		Content: devFileResp.Content,
-		Message: commitMessage,
+		Message: message,
 		Branch:  newBranchName,
 	}
 	resp, err = client.R().SetBody(req).Put(promoteToURL)
@@ -163,7 +163,7 @@ func main() {
 	}
 
 	reqPR := createPrRequest{
-		Title: "promote to prod",
+		Title: message,
 		Head:  newBranchName,
 		Base:  "main",
 	}

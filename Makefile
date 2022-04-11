@@ -15,8 +15,8 @@ app-of-apps-providers-dev:
 	--values values-dev-config.yaml
 
 docker-build-envpromoter:
-    cd cmd/envpromoter && docker build -t kinluek/envpromoter:1.0.4 .
-    docker push kinluek/envpromoter:1.0.4
+    cd cmd/envpromoter && docker build -t kinluek/envpromoter:1.0.5 .
+    docker push kinluek/envpromoter:1.0.5
 
 docker-build-automerger:
     cd cmd/automerger && docker build -t kinluek/automerger:1.0.0 .
