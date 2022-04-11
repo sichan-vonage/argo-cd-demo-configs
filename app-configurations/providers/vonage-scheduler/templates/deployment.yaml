@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.name }}
+  name: {{ .Values.name }}-{{ .Values.environment }}
 spec:
   revisionHistoryLimit: 1
   selector:
     matchLabels:
-      app: {{ .Values.name }}
+      app: {{ .Values.name }}-{{ .Values.environment }}
   replicas: {{ .Values.deployment.replicas }}
   template:
     metadata:
       labels:
-        app: {{ .Values.name }}
+        app: {{ .Values.name }}-{{ .Values.environment }}
     spec:
       containers:
       - name: {{ .Values.name }}
